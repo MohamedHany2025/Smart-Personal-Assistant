@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المساعد الشخصي الذكي</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0F0F0F 0%, #1A1A2E 100%);
+            color: #FFFFFF;
+            min-height: 100%;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        .current-time {
+            font-size: 42px;
+            font-weight: bold;
+            color: #00D4FF;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0;
+            background: linear-gradient(90deg, #00D4FF, #FF006E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #FF006E;
+            margin-top: 10px;
+        }
+        
+        /* Neon Card */
+        .neon-card {
+            background: #1A1A1A;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-top: 3px solid #00D4FF;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .neon-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00D4FF;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-title::before {
+            content: "▪";
+            font-size: 24px;
+        }
+        
+        /* Schedule Item */
+        .schedule-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-right: 3px solid #00D4FF;
+            transition: background 0.3s ease;
+        }
+        
+        .schedule-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .schedule-time {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00D4FF;
+            min-width: 80px;
+        }
+        
+        .schedule-subject {
+            flex: 1;
+            font-size: 15px;
+            margin: 0 15px;
+        }
+        
+        .schedule-duration {
+            font-size: 13px;
+            color: #A0A0A0;
+        }
+        
+        .delete-btn {
+            background: #FF006E;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: #CC0058;
+        }
+        
+        /* Goal Item */
+        .goal-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s ease;
+        }
+        
+        .goal-item:hover {
+            background: rgba(0, 255, 127, 0.1);
+        }
+        
+        .goal-item.completed {
+            opacity: 0.6;
+        }
+        
+        .goal-item.completed .goal-text {
+            text-decoration: line-through;
+        }
+        
+        .goal-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #00FF7F;
+        }
+        
+        .goal-text {
+            flex: 1;
+            font-size: 15px;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-right: 3px solid #FF006E;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00FF7F;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #A0A0A0;
+        }
+        
+        .stat-controls {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #00D4FF, #0099CC);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #FF006E, #CC0058);
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(255, 0, 110, 0.5);
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        /* Form */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00D4FF;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #00D4FF;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        /* Notes */
+        .notes-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 120px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #A0A0A0;
+            font-size: 14px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1A1A1A;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            border-top: 3px solid #00D4FF;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00D4FF;
+            margin-bottom: 20px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        /* Loading State */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #00D4FF;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .current-time {
+                font-size: 32px;
+            }
+            
+            .main-title {
+                font-size: 24px;
+            }
+            
+            .schedule-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container"><!-- Header -->
+   <header class="header">
+    <div class="current-time" id="currentTime">
+     00:00
+    </div>
+    <h1 class="main-title" id="mainTitle">المساعد الشخصي الذكي</h1>
+    <p class="greeting" id="greeting">صباح الخير! 🌅</p>
+   </header><!-- Schedule -->
+   <div class="neon-card">
+    <h2 class="card-title" id="scheduleTitle">جدولك اليوم</h2>
+    <div id="scheduleList"></div><button class="btn btn-small" onclick="openAddScheduleModal()" style="margin-top: 15px;"> ➕ إضافة حصة </button>
+   </div><!-- Goals -->
+   <div class="neon-card">
+    <h2 class="card-title" id="goalsTitle">أهدافك اليومية</h2>
+    <div id="goalsList"></div><button class="btn btn-small" onclick="openAddGoalModal()" style="margin-top: 15px;"> ➕ إضافة هدف </button>
+   </div><!-- Stats -->
+   <div class="neon-card">
+    <h2 class="card-title" id="statsTitle">إحصائيات اليوم</h2>
+    <div class="stats-grid">
+     <div class="stat-box">
+      <div class="stat-value" id="waterCount">
+       0
+      </div>
+      <div class="stat-label">
+       أكواب الماء
+      </div>
+      <div class="stat-controls"><button class="btn btn-small" onclick="incrementWater()">+1</button> <button class="btn-secondary btn btn-small" onclick="decrementWater()">-1</button>
+      </div>
+     </div>
+     <div class="stat-box">
+      <div class="stat-value" id="studyHours">
+       0
+      </div>
+      <div class="stat-label">
+       ساعات الدراسة
+      </div>
+      <div class="stat-controls"><button class="btn btn-small" onclick="incrementStudy()">+1</button> <button class="btn-secondary btn btn-small" onclick="decrementStudy()">-1</button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Notes -->
+   <div class="neon-card">
+    <h2 class="card-title" id="notesTitle">ملاحظاتك السريعة</h2>
+    <div class="notes-content" id="notesContent">
+     لا توجد ملاحظات بعد
+    </div><button class="btn btn-small" onclick="openNotesModal()" style="margin-top: 15px;"> ✏️ تعديل الملاحظات </button>
+   </div>
+  </div><!-- Add Schedule Modal -->
+  <div class="modal" id="scheduleModal">
+   <div class="modal-content">
+    <h3 class="modal-title">إضافة حصة جديدة</h3>
+    <form id="scheduleForm" onsubmit="addSchedule(event)">
+     <div class="form-group"><label class="form-label" for="scheduleTime">الوقت</label> <input type="time" id="scheduleTime" class="form-input" required>
+     </div>
+     <div class="form-group"><label class="form-label" for="scheduleSubject">المادة</label> <input type="text" id="scheduleSubject" class="form-input" placeholder="مثال: رياضيات" required>
+     </div>
+     <div class="form-group"><label class="form-label" for="scheduleDuration">المدة (دقيقة)</label> <input type="number" id="scheduleDuration" class="form-input" placeholder="50" min="1" required>
+     </div>
+     <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeScheduleModal()">إلغاء</button> <button type="submit" class="btn" id="scheduleSubmitBtn">إضافة</button>
+     </div>
+    </form>
+   </div>
+  </div><!-- Add Goal Modal -->
+  <div class="modal" id="goalModal">
+   <div class="modal-content">
+    <h3 class="modal-title">إضافة هدف جديد</h3>
+    <form id="goalForm" onsubmit="addGoal(event)">
+     <div class="form-group"><label class="form-label" for="goalText">الهدف</label> <input type="text" id="goalText" class="form-input" placeholder="مثال: أنهي واجب الرياضيات" required>
+     </div>
+     <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeGoalModal()">إلغاء</button> <button type="submit" class="btn" id="goalSubmitBtn">إضافة</button>
+     </div>
+    </form>
+   </div>
+  </div><!-- Edit Notes Modal -->
+  <div class="modal" id="notesModal">
+   <div class="modal-content">
+    <h3 class="modal-title">تعديل الملاحظات</h3>
+    <form id="notesForm" onsubmit="saveNotes(event)">
+     <div class="form-group"><label class="form-label" for="notesTextarea">ملاحظاتك</label> <textarea id="notesTextarea" class="form-input" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+     </div>
+     <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeNotesModal()">إلغاء</button> <button type="submit" class="btn" id="notesSubmitBtn">حفظ</button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <script>
+        // Configuration
+        const defaultConfig = {
+            main_title: "المساعد الشخصي الذكي",
+            greeting_morning: "صباح الخير! 🌅",
+            greeting_afternoon: "مساء الخير 🌤️",
+            greeting_evening: "مساء جميل 🌙",
+            schedule_title: "جدولك اليوم",
+            goals_title: "أهدافك اليومية",
+            stats_title: "إحصائيات اليوم",
+            notes_title: "ملاحظاتك السريعة"
+        };
+
+        let allRecords = [];
+        let waterCount = 0;
+        let studyHours = 0;
+
+        // Initialize Element SDK
+        async function onConfigChange(config) {
+            document.getElementById('mainTitle').textContent = config.main_title || defaultConfig.main_title;
+            document.getElementById('scheduleTitle').textContent = config.schedule_title || defaultConfig.schedule_title;
+            document.getElementById('goalsTitle').textContent = config.goals_title || defaultConfig.goals_title;
+            document.getElementById('statsTitle').textContent = config.stats_title || defaultConfig.stats_title;
+            document.getElementById('notesTitle').textContent = config.notes_title || defaultConfig.notes_title;
+            updateGreeting(config);
+        }
+
+        function updateGreeting(config) {
+            const hour = new Date().getHours();
+            let greeting;
+            if (hour < 12) {
+                greeting = config.greeting_morning || defaultConfig.greeting_morning;
+            } else if (hour < 18) {
+                greeting = config.greeting_afternoon || defaultConfig.greeting_afternoon;
+            } else {
+                greeting = config.greeting_evening || defaultConfig.greeting_evening;
+            }
+            document.getElementById('greeting').textContent = greeting;
+        }
+
+        window.elementSdk.init({
+            defaultConfig: defaultConfig,
+            onConfigChange: onConfigChange,
+            mapToCapabilities: (config) => ({
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            }),
+            mapToEditPanelValues: (config) => new Map([
+                ["main_title", config.main_title || defaultConfig.main_title],
+                ["greeting_morning", config.greeting_morning || defaultConfig.greeting_morning],
+                ["greeting_afternoon", config.greeting_afternoon || defaultConfig.greeting_afternoon],
+                ["greeting_evening", config.greeting_evening || defaultConfig.greeting_evening],
+                ["schedule_title", config.schedule_title || defaultConfig.schedule_title],
+                ["goals_title", config.goals_title || defaultConfig.goals_title],
+                ["stats_title", config.stats_title || defaultConfig.stats_title],
+                ["notes_title", config.notes_title || defaultConfig.notes_title]
+            ])
+        });
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', hour12: false });
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Data SDK Handler
+        const dataHandler = {
+            onDataChanged(data) {
+                allRecords = data;
+                renderSchedule();
+                renderGoals();
+                updateStats();
+                renderNotes();
+            }
+        };
+
+        // Render functions
+        function renderSchedule() {
+            const schedules = allRecords.filter(r => r.type === 'schedule').sort((a, b) => a.time.localeCompare(b.time));
+            const container = document.getElementById('scheduleList');
+            
+            if (schedules.length === 0) {
+                container.innerHTML = '<div class="empty-state">لا توجد حصص في الجدول</div>';
+                return;
+            }
+            
+            container.innerHTML = schedules.map(s => `
+                <div class="schedule-item">
+                    <div class="schedule-time">${s.time}</div>
+                    <div class="schedule-subject">${s.subject}</div>
+                    <div class="schedule-duration">${s.duration} دقيقة</div>
+                    <button class="delete-btn" onclick="deleteRecord('${s.id}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderGoals() {
+            const goals = allRecords.filter(r => r.type === 'goal');
+            const container = document.getElementById('goalsList');
+            
+            if (goals.length === 0) {
+                container.innerHTML = '<div class="empty-state">لم تضف أهدافًا بعد</div>';
+                return;
+            }
+            
+            container.innerHTML = goals.map(g => `
+                <div class="goal-item ${g.completed ? 'completed' : ''}">
+                    <input type="checkbox" class="goal-checkbox" ${g.completed ? 'checked' : ''} 
+                           onchange="toggleGoal('${g.id}', this.checked)">
+                    <div class="goal-text">${g.goal_text}</div>
+                    <button class="delete-btn" onclick="deleteRecord('${g.id}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const stats = allRecords.find(r => r.type === 'stats');
+            if (stats) {
+                waterCount = stats.duration || 0;
+                studyHours = stats.time ? parseInt(stats.time) : 0;
+            } else {
+                waterCount = 0;
+                studyHours = 0;
+            }
+            
+            document.getElementById('waterCount').textContent = waterCount;
+            document.getElementById('studyHours').textContent = studyHours;
+        }
+
+        function renderNotes() {
+            const note = allRecords.find(r => r.type === 'note');
+            const content = document.getElementById('notesContent');
+            
+            if (note && note.note_text) {
+                content.textContent = note.note_text;
+            } else {
+                content.textContent = 'لا توجد ملاحظات بعد';
+            }
+        }
+
+        // Modal functions
+        function openAddScheduleModal() {
+            document.getElementById('scheduleModal').classList.add('active');
+            document.getElementById('scheduleForm').reset();
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.remove('active');
+        }
+
+        function openAddGoalModal() {
+            document.getElementById('goalModal').classList.add('active');
+            document.getElementById('goalForm').reset();
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.remove('active');
+        }
+
+        function openNotesModal() {
+            const note = allRecords.find(r => r.type === 'note');
+            document.getElementById('notesTextarea').value = note ? note.note_text : '';
+            document.getElementById('notesModal').classList.add('active');
+        }
+
+        function closeNotesModal() {
+            document.getElementById('notesModal').classList.remove('active');
+        }
+
+        // Add schedule
+        async function addSchedule(event) {
+            event.preventDefault();
+            const btn = document.getElementById('scheduleSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> جاري الإضافة...';
+            
+            const time = document.getElementById('scheduleTime').value;
+            const subject = document.getElementById('scheduleSubject').value;
+            const duration = parseInt(document.getElementById('scheduleDuration').value);
+            
+            const result = await window.dataSdk.create({
+                id: Date.now().toString() + Math.random(),
+                type: 'schedule',
+                time: time,
+                subject: subject,
+                duration: duration,
+                completed: false,
+                goal_text: '',
+                note_text: '',
+                created_at: new Date().toISOString()
+            });
+            
+            btn.disabled = false;
+            btn.textContent = 'إضافة';
+            
+            if (result.isOk) {
+                closeScheduleModal();
+            } else {
+                alert('حدث خطأ أثناء الإضافة');
+            }
+        }
+
+        // Add goal
+        async function addGoal(event) {
+            event.preventDefault();
+            const btn = document.getElementById('goalSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> جاري الإضافة...';
+            
+            const goalText = document.getElementById('goalText').value;
+            
+            const result = await window.dataSdk.create({
+                id: Date.now().toString() + Math.random(),
+                type: 'goal',
+                goal_text: goalText,
+                completed: false,
+                time: '',
+                subject: '',
+                duration: 0,
+                note_text: '',
+                created_at: new Date().toISOString()
+            });
+            
+            btn.disabled = false;
+            btn.textContent = 'إضافة';
+            
+            if (result.isOk) {
+                closeGoalModal();
+            } else {
+                alert('حدث خطأ أثناء الإضافة');
+            }
+        }
+
+        // Toggle goal
+        async function toggleGoal(id, completed) {
+            const goal = allRecords.find(r => r.id === id);
+            if (goal) {
+                goal.completed = completed;
+                await window.dataSdk.update(goal);
+            }
+        }
+
+        // Save notes
+        async function saveNotes(event) {
+            event.preventDefault();
+            const btn = document.getElementById('notesSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> جاري الحفظ...';
+            
+            const noteText = document.getElementById('notesTextarea').value;
+            const existingNote = allRecords.find(r => r.type === 'note');
+            
+            let result;
+            if (existingNote) {
+                existingNote.note_text = noteText;
+                result = await window.dataSdk.update(existingNote);
+            } else {
+                result = await window.dataSdk.create({
+                    id: Date.now().toString(),
+                    type: 'note',
+                    note_text: noteText,
+                    time: '',
+                    subject: '',
+                    duration: 0,
+                    goal_text: '',
+                    completed: false,
+                    created_at: new Date().toISOString()
+                });
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'حفظ';
+            
+            if (result.isOk) {
+                closeNotesModal();
+            } else {
+                alert('حدث خطأ أثناء الحفظ');
+            }
+        }
+
+        // Delete record
+        async function deleteRecord(id) {
+            const record = allRecords.find(r => r.id === id);
+            if (record) {
+                const result = await window.dataSdk.delete(record);
+                if (!result.isOk) {
+                    alert('حدث خطأ أثناء الحذف');
+                }
+            }
+        }
+
+        // Stats functions
+        async function incrementWater() {
+            await updateStat(waterCount + 1, studyHours);
+        }
+
+        async function decrementWater() {
+            if (waterCount > 0) {
+                await updateStat(waterCount - 1, studyHours);
+            }
+        }
+
+        async function incrementStudy() {
+            await updateStat(waterCount, studyHours + 1);
+        }
+
+        async function decrementStudy() {
+            if (studyHours > 0) {
+                await updateStat(waterCount, studyHours - 1);
+            }
+        }
+
+        async function updateStat(water, study) {
+            const existingStat = allRecords.find(r => r.type === 'stats');
+            
+            let result;
+            if (existingStat) {
+                existingStat.duration = water;
+                existingStat.time = study.toString();
+                result = await window.dataSdk.update(existingStat);
+            } else {
+                result = await window.dataSdk.create({
+                    id: 'stats',
+                    type: 'stats',
+                    duration: water,
+                    time: study.toString(),
+                    subject: '',
+                    goal_text: '',
+                    note_text: '',
+                    completed: false,
+                    created_at: new Date().toISOString()
+                });
+            }
+            
+            if (!result.isOk) {
+                alert('حدث خطأ أثناء التحديث');
+            }
+        }
+
+        // Initialize Data SDK
+        window.dataSdk.init(dataHandler);
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a0968bf211fe181',t:'MTc2MzQ4OTI2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
