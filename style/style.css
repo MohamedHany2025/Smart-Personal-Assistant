@@ -456,5 +456,9 @@ body {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            .Footer-Program{
+                font-size: 15px;
+                width: 27%;
+            }
         }
 @view-transition { navigation: auto; }
