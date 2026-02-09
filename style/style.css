@@ -422,6 +422,7 @@ body {
         }
         .a-fot{
             text-decoration: none;
+            font-size: 11.3px;
         }
         .a-fot:hover{
             text-decoration: #00D4FF;
